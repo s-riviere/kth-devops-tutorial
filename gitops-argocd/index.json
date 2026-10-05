@@ -1,0 +1,37 @@
+{
+  "title": "GitOps and Continuous Reconciliation with Argo CD",
+  "description": "A minimal hands-on demo of configuration drift and Argo CD self-healing.",
+  "details": {
+    "intro": {
+      "text": "intro.md"
+    },
+    "steps": [
+      {
+        "title": "1. Check the Kubernetes cluster",
+        "text": "step1.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "2. Install Argo CD",
+        "text": "step2.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "3. Deploy the GitOps application",
+        "text": "step3.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "4. Break it and watch self-healing",
+        "text": "step4.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node-4GB"
+  }
+}
