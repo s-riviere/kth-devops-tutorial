@@ -4,12 +4,21 @@ set -euo pipefail
 SETUP_MARKER="/tmp/argocd-setup-complete"
 APPLICATION_FILE="/tmp/my-app-application.yaml"
 
+# Pin Argo CD to a known stable version for reproducible tutorial runs.
+ARGOCD_VERSION="v3.5.3"
+ARGOCD_MANIFEST_URL="https://raw.githubusercontent.com/argoproj/argo-cd/${ARGOCD_VERSION}/manifests/install.yaml"
+
 rm -f "$SETUP_MARKER"
 rm -f "$APPLICATION_FILE"
 
-# Wait until the Kubernetes cluster is ready.
-until kubectl get nodes --no-headers 2>/dev/null \
-  | awk '$2 == "Ready" {found=1} END {exit(found ? 0 : 1)}'
+# Wait until all Kubernetes nodes are Ready.
+# kubectl wait is preferred over parsing the human-readable kubectl output.
+until kubectl wait \
+  --for=condition=Ready \
+  nodes \
+  --all \
+  --timeout=10s \
+  >/dev/null 2>&1
 do
   sleep 2
 done
@@ -17,23 +26,24 @@ done
 # Create the Argo CD namespace.
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
-# Install Argo CD.
+# Install a pinned Argo CD version.
 kubectl apply --server-side --force-conflicts \
   -n argocd \
-  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-# Wait for the Argo CD server.
-kubectl wait --for=condition=Available \
-  deployment/argocd-server \
-  -n argocd \
-  --timeout=180s
+  -f "$ARGOCD_MANIFEST_URL"
 
 # Configure Argo CD for the Killercoda HTTP endpoint
 # and use a short self-healing backoff for the demo.
 kubectl patch configmap argocd-cmd-params-cm \
   -n argocd \
   --type merge \
-  -p '{"data":{"server.insecure":"true","controller.self.heal.backoff.timeout.seconds":"2","controller.self.heal.backoff.factor":"2","controller.self.heal.backoff.cap.seconds":"15"}}'
+  -p '{
+    "data": {
+      "server.insecure": "true",
+      "controller.self.heal.backoff.timeout.seconds": "20",
+      "controller.self.heal.backoff.factor": "2",
+      "controller.self.heal.backoff.cap.seconds": "30"
+    }
+  }'
 
 # Restart the Argo CD server so the HTTP setting is applied.
 kubectl rollout restart deployment/argocd-server -n argocd

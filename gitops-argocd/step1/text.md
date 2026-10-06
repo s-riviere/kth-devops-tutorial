@@ -14,4 +14,6 @@ The node should have the status:
 Ready
 ```
 
+ArgoCD is being installed and configured in the background, the check button will let you pass after everything is ready (<2mn).
+
 Click **CHECK** when the Kubernetes cluster is ready.

@@ -2,19 +2,21 @@
 
 Now simulate a manual production change.
 
-Delete the Service:
+The self-healing process will take effect after 20 seconds so you have time to check the drift in command line or in the ArgoCD web UI.
+
+The two subsequent drift are presented here:
+
+1. Delete the Service:
 
 ```bash
 kubectl delete service my-app-service
 ```
 
-Then scale the Deployment to zero:
+2. Then scale the Deployment to zero:
 
 ```bash
 kubectl scale deployment my-app --replicas=0
 ```
-
-You have now changed the live Kubernetes state without changing Git.
 
 Check the drift:
 
