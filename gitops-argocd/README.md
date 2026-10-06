@@ -1,58 +1,64 @@
-# Killercoda — Argo CD GitOps V1
+# GitOps and Continuous Reconciliation with Argo CD — V4
 
-## Repository layout
+Functional Killercoda scenario for demonstrating configuration drift and Argo CD self-healing.
 
-Put this scenario directory in the GitHub repository connected to Killercoda.
+## Scenario structure
 
-The important files are:
-
-- `index.json` — Killercoda scenario metadata
-- `intro.md` — introduction
-- `step1.md` ... `step4.md` — tutorial steps
-- `step*/verify.sh` — optional step checks
-- `gitops/application.yaml` — Argo CD Application
-- `gitops/app/deployment.yaml` — desired Deployment
-- `gitops/app/service.yaml` — desired Service
-
-## One required edit
-
-Open `gitops/application.yaml` and replace:
-
-```yaml
-repoURL: https://github.com/REPLACE-ME/YOUR-REPO.git
+```text
+gitops-argocd/
+├── index.json
+├── background.sh
+├── foreground.sh
+├── intro/
+│   └── text.md
+├── step1/
+│   ├── text.md
+│   └── verify.sh
+├── step2/
+│   ├── text.md
+│   └── verify.sh
+├── step3/
+│   ├── text.md
+│   └── verify.sh
+├── step4/
+│   ├── text.md
+│   └── verify.sh
+├── finish/
+│   └── text.md
+├── assets/
+│   └── application.yaml
+└── gitops/
+    ├── application.yaml
+    └── app/
+        ├── deployment.yaml
+        └── service.yaml
 ```
 
-with the public URL of the GitHub repository that contains this file.
+## Startup
 
-Example:
+`background.sh` installs/configures Argo CD and starts the port-forward. `foreground.sh` waits for a completion marker before the learner can continue.
 
-```yaml
-repoURL: https://github.com/example/my-killercoda-tutorial.git
-```
+## Asset
 
-The `path: gitops/app` value must stay correct relative to the repository root.
+Killercoda copies `assets/application.yaml` to `/tmp/my-app-application.yaml`.
 
-## Expected demo
+## GitOps source
 
-Initial state:
+Argo CD watches:
 
-- Deployment `my-app` has 2 replicas
-- Service `my-app-service` exists
-- Argo CD is `Synced` / `Healthy`
+`https://github.com/s-riviere/kth-devops-tutorial.git`
 
-Drift:
+Path:
+
+`gitops-argocd/gitops/app`
+
+The repository is public for this first functional version.
+
+## Drift demonstration
 
 ```bash
-kubectl delete service my-app-service -n gitops-demo
-kubectl scale deployment my-app -n gitops-demo --replicas=0
+kubectl delete service my-app-service
+kubectl scale deployment my-app --replicas=0
 ```
 
-Recovery:
-
-Argo CD detects the live-state difference and automatically restores the Git-defined state because automated sync with `selfHeal: true` is enabled.
-
-## Notes
-
-This V1 deliberately uses the current Killercoda Kubernetes kubeadm image rather than assuming a K3s image. The Killercoda creator documentation currently lists `kubernetes-kubeadm-1node` and `kubernetes-kubeadm-1node-4GB`.
-
-The Argo CD server is switched to HTTP for the Killercoda browser endpoint. This is suitable only for the ephemeral lab environment; it is not a production security recommendation.
+Argo CD has `selfHeal: true` enabled and restores the Git-defined state.
