@@ -1,50 +1,62 @@
 # 3. Deploy the GitOps application
 
-The Kubernetes manifests are stored in this repository under:
+The Argo CD Application manifest is already configured to use the GitHub repository for this tutorial.
 
-```text
-gitops/app/
-```
-
-Before using the Application manifest, set `repoURL` in:
-
-```text
-gitops/application.yaml
-```
-
-It must point to **this GitHub repository**.
-
-Example:
-
-```yaml
-repoURL: https://github.com/YOUR-USER/YOUR-REPO.git
-```
-
-Commit and push that change before starting the scenario.
-
-Then apply the Argo CD Application:
+Apply the Application manifest directly from GitHub:
 
 ```bash
-kubectl apply -f gitops/application.yaml
+curl -fsSL   https://raw.githubusercontent.com/s-riviere/kth-devops-tutorial/main/gitops-argocd/gitops/application.yaml   | kubectl apply -f -
 ```
 
-Check the result:
+Check that the Application has been created:
 
 ```bash
-kubectl get applications -n argocd
-kubectl get deployment,service
+kubectl get application my-app -n argocd
+```
+
+Wait for Argo CD to synchronize the application:
+
+```bash
+kubectl wait   --for=jsonpath='{.status.sync.status}'=Synced   application/my-app   -n argocd   --timeout=120s
+```
+
+Wait for the application to become healthy:
+
+```bash
+kubectl wait   --for=jsonpath='{.status.health.status}'=Healthy   application/my-app   -n argocd   --timeout=120s
+```
+
+Check the deployed Kubernetes resources:
+
+```bash
+kubectl get deployment my-app
+kubectl get service my-app-service
+kubectl get pods -l app=my-app
 ```
 
 You should see:
 
-- Application: `my-app`
-- Sync status: `Synced`
-- Health: `Healthy`
-- Deployment: `my-app`
-- Service: `my-app-service`
+- `my-app` with **2 replicas**
+- `my-app-service`
+- two running application pods
 
-Open the Argo CD UI again:
+Check the final Argo CD status:
+
+```bash
+kubectl get application my-app -n argocd   -o jsonpath='Sync: {.status.sync.status}{"\n"}Health: {.status.health.status}{"\n"}'
+```
+
+The expected result is:
+
+```text
+Sync: Synced
+Health: Healthy
+```
+
+Open the Argo CD UI:
 
 [Open Argo CD]({{TRAFFIC_HOST1_8080}})
 
-Click **CHECK** when the application is synced and healthy.
+You should see the `my-app` application in the Argo CD interface with a healthy resource tree.
+
+Click **CHECK** when the application is **Synced** and **Healthy**.
