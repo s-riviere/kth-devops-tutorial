@@ -16,25 +16,7 @@ Check the Argo CD Application:
 kubectl get application my-app -n argocd
 ```
 
-Wait for it to become synchronized:
-
-```bash
-kubectl wait \
-  --for=jsonpath='{.status.sync.status}'=Synced \
-  application/my-app \
-  -n argocd \
-  --timeout=120s
-```
-
-Wait for the application to become healthy:
-
-```bash
-kubectl wait \
-  --for=jsonpath='{.status.health.status}'=Healthy \
-  application/my-app \
-  -n argocd \
-  --timeout=120s
-```
+It should eventually be Synced and Healthy after a while.
 
 Check the resources created by Argo CD:
 

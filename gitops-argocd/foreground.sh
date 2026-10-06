@@ -1,0 +1,1 @@
+until [ -f /tmp/argocd-setup-complete ]; do printf "\r\033[K⏳ %s" "$(cat /tmp/argocd-setup-status 2>/dev/null || echo 'Preparing the environment...')"; sleep 2; done; printf "\r\033[K✅ Argo CD is ready\n"
