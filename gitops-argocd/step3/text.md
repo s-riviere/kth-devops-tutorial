@@ -8,11 +8,9 @@ For this we use an `Application` resource. Let's have a look at it:
 cat /tmp/my-app-application.yaml
 ```{{exec}}
 
-There are three important parts here:
+The `source` points to our Git repository, the branch (`HEAD`) and the folder `gitops-argocd/gitops/app`. The `destination` is the same cluster where Argo CD runs (`https://kubernetes.default.svc`), in the `default` namespace.
 
-- `source` points to our Git repository, the branch (`HEAD`) and the folder `gitops-argocd/gitops/app`.
-- `destination` is the same cluster where Argo CD runs (`https://kubernetes.default.svc`), in the `default` namespace.
-- `syncPolicy.automated` means that Argo CD syncs by itself, nobody has to click a button. With `prune: true` it deletes objects that are removed from Git, and with `selfHeal: true` it reverts manual changes in the cluster. We will test this last one in the next step!
+`syncPolicy.automated` means that Argo CD syncs by itself, nobody has to click a button. With `prune: true` it deletes objects that are removed from Git, and with `selfHeal: true` it reverts manual changes in the cluster. We will test this last one in the next step.
 
 Now apply it:
 
@@ -28,7 +26,7 @@ You can also check it from the terminal:
 kubectl get application my-app -n argocd
 ```{{exec}}
 
-> Note: There are two different statuses here. The **sync status** tells you if the cluster is the same as Git (`Synced` or `OutOfSync`). The **health status** tells you if the application actually works (`Healthy`, `Progressing`, `Degraded`, ...). An app can be `Synced` but not `Healthy`, for example if the image can't be pulled.
+There are two different statuses here. The sync status tells you if the cluster is the same as Git (`Synced` or `OutOfSync`). The health status tells you if the application actually works (`Healthy`, `Progressing`, `Degraded`, ...). An app can be `Synced` but not `Healthy`, for example if the image can't be pulled.
 
 Let's check the resources that Argo CD created:
 

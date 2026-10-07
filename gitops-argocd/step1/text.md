@@ -11,8 +11,8 @@ The script also changes some settings for us:
 - it downloads the `Application` manifest that we will use in step 3
 - it opens the web UI on port 8080
 
-We made the installation automatic because installing Argo CD is not really what this tutorial is about. The application however is **not** deployed yet, you will do that yourself in step 3.
+We made the installation automatic because installing Argo CD is not really what this tutorial is about. The application however is not deployed yet, you will do that yourself in step 3.
 
-> Note: This usually takes less than two minutes, so you can read the introduction again while you wait if you want 😉
+This usually takes less than two minutes.
 
 Click **CHECK** when you see `Argo CD is ready` in the terminal.

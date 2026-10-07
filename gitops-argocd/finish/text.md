@@ -1,14 +1,10 @@
-# Great job! 🎉
+# Conclusion
 
-You finished the tutorial! Let's go through what you did and think a bit about when this is useful.
+You finished the tutorial. Let's go through what you did and think a bit about when this is useful.
 
 ## Summary
 
-Here's what you did:
-
-- Argo CD was installed in the cluster and connected to our Git repository
-- You created an `Application` pointing to `gitops-argocd/gitops/app/`, and Argo CD deployed the app for you, without you running `kubectl apply` on the app manifests
-- You deleted the Service and scaled the Deployment to zero, and both times Argo CD put everything back like in Git in a few seconds
+First Argo CD was installed in the cluster and connected to our Git repository. Then you created an `Application` pointing to `gitops-argocd/gitops/app/`, and Argo CD deployed the app for you, without you running `kubectl apply` on the app manifests. After that you deleted the Service and scaled the Deployment to zero, and both times Argo CD put everything back like in Git in a few seconds.
 
 Notice that you never asked Argo CD to fix anything. The fix comes from the reconciliation loop, which repeats the same steps again and again: look at the live state, compare it with the desired state, and change what is different. Kubernetes itself also works like this, for example the ReplicaSet controller makes sure the right number of Pods is running. Argo CD does the same thing, just at a higher level and with Git as the input.
 
@@ -35,7 +31,7 @@ GitOps is useful for teams with many clusters or environments that need to stay 
 But it is not perfect, there are some problems:
 
 - You can't put secrets in Git as plain text, so you need extra tools like Sealed Secrets, SOPS or External Secrets Operator.
-- Urgent fixes are harder. With self-healing on, a manual hotfix is reverted in a few seconds (like you saw in step 4!), so you have to go through Git or turn off self-healing first. It is safer, but slower when there is a big problem.
+- Urgent fixes are harder. With self-healing on, a manual hotfix is reverted in a few seconds (like you saw in step 4), so you have to go through Git or turn off self-healing first. It is safer, but slower when there is a big problem.
 - Argo CD only manages Kubernetes resources. For databases, DNS or cloud networking you still need something like Terraform or Crossplane.
 - For a small project with one cluster and one developer, the extra component and repo structure is probably too much work for what you get.
 - Changes in Git are not instant, since the repo is checked every few minutes by default. Webhooks can make this faster.
@@ -45,5 +41,3 @@ But it is not perfect, there are some problems:
 - [Argo CD documentation](https://argo-cd.readthedocs.io/)
 - [OpenGitOps principles](https://opengitops.dev/)
 - [Flux](https://fluxcd.io/)
-
-Thanks for following our tutorial! 👋

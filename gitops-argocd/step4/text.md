@@ -1,8 +1,8 @@
 # Step 4: Create drift and watch self-healing
 
-This is the fun part! Now you are the engineer from the story in the introduction, who changes production by hand. Both commands below make the cluster different from what is in Git.
+Now you are the engineer from the story in the introduction, who changes production by hand. Both commands below make the cluster different from what is in Git.
 
-Keep the Argo CD UI open when you run them. Argo CD watches the cluster through the Kubernetes API, so it sees the change very fast, and it should be fixed in around 5 seconds. Don't blink! 👀
+Keep the Argo CD UI open when you run them. Argo CD watches the cluster through the Kubernetes API, so it sees the change very fast, and it should be fixed in around 5 seconds.
 
 ## Delete the Service
 
@@ -16,7 +16,7 @@ In the UI the application becomes `OutOfSync` and the Service disappears for a m
 kubectl get service my-app-service
 ```{{exec}}
 
-The Service is back! If you look at the `AGE` column you can see that it is a new object. Argo CD simply applied the manifest from Git again.
+The Service is back. If you look at the `AGE` column you can see that it is a new object. Argo CD simply applied the manifest from Git again.
 
 ## Scale the Deployment to zero
 
@@ -30,9 +30,7 @@ In Git our Deployment has `replicas: 2`, so Argo CD changes it back. You can wat
 watch -n 1 'kubectl get deployment my-app'
 ```{{exec}}
 
-You might see `0/2` or `1/2` for a short time while the Pods are starting again.
-
-> Note: Press `Ctrl+C` to stop `watch`.
+You might see `0/2` or `1/2` for a short time while the Pods are starting again. Press `Ctrl+C` to stop `watch`.
 
 ## So what happened?
 
