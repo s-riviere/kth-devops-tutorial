@@ -1,24 +1,32 @@
-# 2. Open the Argo CD dashboard
+# Step 2: Open the Argo CD dashboard
 
-First, check that the Kubernetes node is `Ready`:
+First let's make sure the Kubernetes node is `Ready`:
 
 ```bash
 kubectl get nodes
 ```{{exec}}
 
-Then look at what was installed in the background:
+Now let's look at what was installed in the background:
 
 ```bash
 kubectl get pods -n argocd
 ```{{exec}}
 
-The important pods are `argocd-server` (web UI and API), `argocd-repo-server` (it clones the Git repo and prepares the manifests) and `argocd-application-controller`, which runs the reconciliation loop. The diagram in the introduction shows how they are connected.
+You will see quite a lot of pods, but the important ones for us are:
 
-Open the Argo CD web interface in a new tab. It is better to put it next to this window, so you can see the terminal and the UI together.
+- `argocd-server` - the web UI and the API
+- `argocd-repo-server` - clones the Git repository and prepares the manifests
+- `argocd-application-controller` - this one runs the reconciliation loop, so it is the one doing the actual work!
+
+Do you remember where they are in the diagram from the introduction?
+
+Go ahead and open the Argo CD web interface in a new tab:
 
 [Open Argo CD]({{TRAFFIC_HOST1_8080}})
 
-When Argo CD is installed, it creates a random admin password and saves it in a Kubernetes Secret. You can get it with:
+> Tip: Put the Argo CD tab next to this window so you can see the terminal and the UI at the same time. It makes step 4 a lot more fun!
+
+When Argo CD is installed, it creates a random password for the admin user and saves it in a Kubernetes Secret. We can get it with:
 
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
@@ -26,6 +34,6 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 Log in with the username `admin` and the password from the command.
 
-The dashboard is empty for now. Argo CD is running, but it doesn't manage any application yet.
+The dashboard is empty for now. Argo CD is running, but it is not managing any application yet. Let's change that in the next step.
 
 Click **CHECK** when you are logged in.
