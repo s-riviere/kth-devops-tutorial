@@ -1,42 +1,38 @@
 # Conclusion
 
-## What you did
+## Summary
 
-1. Argo CD was installed in the cluster and connected to a Git repository.
-2. You created an `Application` that points Argo CD to `gitops-argocd/gitops/app/`, and Argo CD deployed it without you running `kubectl apply` on the app manifests.
-3. You deleted the Service and scaled the Deployment to zero. Argo CD saw the live state diverge from Git and restored it in a few seconds.
+In this tutorial Argo CD was installed in the cluster and connected to a Git repository. You created an `Application` pointing to `gitops-argocd/gitops/app/`, and Argo CD deployed the app without you running `kubectl apply` on any of the app manifests. Then you deleted the Service and scaled the Deployment to zero, and both times Argo CD put things back the way Git describes them within a few seconds.
 
-At no point did you tell Argo CD to "fix" anything. The repair came from the reconciliation loop: observe the live state, compare it with the desired state, act on the difference, repeat. Kubernetes controllers already work this way for Pods and ReplicaSets; Argo CD applies the same loop one level higher, with Git as the input.
+You never told Argo CD to fix anything. The repair comes from the reconciliation loop, which keeps repeating three things: look at the live state, compare it with the desired state, and act on the difference. Kubernetes itself already works like this, for example a ReplicaSet controller keeps the right number of Pods running. Argo CD does the same thing but one level higher, with Git as the input.
 
-## How this relates to DevOps
+## Connection to DevOps
 
-- **Infrastructure as Code**: the application's configuration is versioned, reviewed and auditable like any other code. `git log` tells you who changed what and when.
-- **Continuous delivery**: deploying becomes merging a commit. Rolling back becomes `git revert`.
-- **Security**: CI never needs credentials to the cluster. Argo CD pulls from inside, so the cluster API does not have to be exposed to a CI runner.
+GitOps is basically Infrastructure as Code taken one step further. The configuration of the application is versioned and reviewed like normal code, and `git log` shows who changed what and when. It also changes how continuous delivery works, since deploying means merging a commit and a rollback can be done with `git revert`.
 
-## Why Argo CD
+There is also a security benefit. The CI pipeline does not need credentials for the cluster, because Argo CD pulls the changes from inside the cluster. So the Kubernetes API doesn't have to be reachable from a CI runner.
 
-We picked Argo CD because it is a CNCF graduated project, it ships a web UI that makes drift visible (useful for learning), and it can be installed with a single manifest. **Flux** is the main alternative. It follows the same GitOps principles, is lighter, and is driven entirely by CLI and CRDs, but has no built-in UI. For a tutorial whose goal is to *see* reconciliation, the UI made Argo CD the better fit.
+## Why we chose Argo CD
 
-Two settings were changed for the demo: `timeout.reconciliation.jitter` set to `0` and a self-heal backoff capped at 5 seconds, so that healing is fast enough to watch. Production setups usually keep longer backoffs to avoid fighting with other controllers.
+The main alternative is Flux. Both follow the GitOps principles, and Flux is lighter, but it is used through the CLI and CRDs only and has no built-in UI. We chose Argo CD mostly because of its web UI, which lets you actually see the drift and the healing happen, and that was the whole point of this tutorial. Argo CD is also a graduated CNCF project and can be installed with one manifest, which made the Killercoda setup easier.
 
-## Limitations of this tutorial
+We changed two settings for the demo: `timeout.reconciliation.jitter` is set to `0` and the self-heal backoff is capped at 5 seconds, so the healing happens fast enough to watch. In a real production setup you would probably keep a longer backoff, so Argo CD doesn't end up fighting with other controllers that modify the same resources.
 
-You only created drift from the cluster side. The other half of GitOps, changing the desired state by committing to Git and watching the cluster follow, is not shown here because the repository is on GitHub and you cannot push to it without an account. With a fork, you would change `replicas: 2` to `3`, commit, and Argo CD would roll it out on its next poll.
+## Limitations of the tutorial
 
-## When GitOps fits, and when it does not
+The drift in this tutorial only comes from the cluster side. We don't show the other direction, where you commit a change to Git and the cluster follows it. That would need you to push to the GitHub repository, which needs an account. With your own fork you could change `replicas: 2` to `3`, commit it, and Argo CD would roll it out the next time it polls the repo.
 
-**Good fit:**
-- Teams running several Kubernetes clusters or environments that must stay identical.
-- Organisations that need an audit trail of every change (finance, healthcare, regulated industries).
-- Platform teams who want developers to deploy by opening a pull request, without cluster access.
+## When to use it (and when not)
 
-**Poor fit or extra work needed:**
-- **Secrets** cannot be stored in Git as plain text. You need extra tooling such as Sealed Secrets, SOPS or the External Secrets Operator.
-- **Emergency fixes**: with self-healing on, a manual hotfix is reverted within seconds. The fix has to go through Git, or self-healing has to be paused first. This is safer but slower under pressure.
-- **Non-Kubernetes infrastructure** (databases, DNS, cloud networking) is outside Argo CD's reach. Terraform or Crossplane is still needed there.
-- **Small projects** with one cluster and one developer may find the extra component and repository structure more overhead than benefit.
-- **Delay**: Git is polled every few minutes by default. Webhooks reduce it, but a change is never instant.
+GitOps makes the most sense for teams that run several clusters or environments that need to stay the same, and for companies that need an audit trail of every change, for example in finance or healthcare. It also works well for platform teams that want developers to deploy by opening a pull request instead of having direct access to the cluster.
+
+There are some problems though:
+
+- Secrets can't be stored in Git in plain text, so you need extra tools like Sealed Secrets, SOPS or the External Secrets Operator.
+- Emergency fixes become harder. With self-healing on, a manual hotfix gets reverted in a few seconds, so you either go through Git or pause self-healing first. It is safer, but slower when something is on fire.
+- Argo CD only manages Kubernetes resources. For things like databases, DNS or cloud networking you still need Terraform or Crossplane.
+- For a small project with one cluster and one developer, the extra component and repo structure is probably more overhead than it is worth.
+- Changes in Git are not instant, since the repo is polled every few minutes by default. Webhooks can make it faster.
 
 ## Further reading
 

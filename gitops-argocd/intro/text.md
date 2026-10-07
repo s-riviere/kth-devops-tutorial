@@ -1,34 +1,36 @@
 # GitOps and continuous reconciliation with Argo CD
 
-## The problem
+## Why this matters
 
-Someone gets paged at night, runs `kubectl scale` or `kubectl edit` to fix production, and goes back to sleep. Nobody writes it down. A week later the cluster no longer matches what the team thinks is deployed, and the next release either undoes the fix or breaks on top of it. This gap between the declared configuration and what is actually running is called **configuration drift**.
+Imagine someone on call gets an alert at night, runs `kubectl scale` or `kubectl edit` directly on the production cluster to fix it, and goes back to bed without telling anyone. A week later what is running in the cluster is not what the team thinks is deployed anymore. The next release might undo the fix, or break because of it. This difference between the configuration you declared and what actually runs is called configuration drift.
 
-Push-based Infrastructure as Code tools (Terraform, Ansible, a CI job running `kubectl apply`) only compare the two states when someone runs them. Between runs, drift goes unnoticed.
+With push-based Infrastructure as Code tools like Terraform, Ansible or a CI job that runs `kubectl apply`, the two states are only compared when somebody runs the tool. If nobody runs it, nobody notices the drift.
 
-GitOps takes a different approach: Git holds the desired state, and an agent running inside the cluster keeps comparing that state with the live cluster and corrects any difference. In this tutorial that agent is **Argo CD**.
+GitOps tries to solve this. The desired state is kept in Git, and an agent that runs inside the cluster keeps comparing it to the live state and fixes any difference it finds. In this tutorial we use Argo CD as that agent.
 
 ## Learning outcomes
 
-By the end of this tutorial you will be able to:
+After this tutorial you should be able to:
 
-1. Explain the GitOps principles: declarative configuration, Git as the single source of truth, pull-based deployment and continuous reconciliation.
-2. Deploy an application through an Argo CD `Application` resource and read its `Synced` and `Healthy` status in the CLI and the web UI.
-3. Cause configuration drift with imperative `kubectl` commands and observe Argo CD detect it (`OutOfSync`) and repair it with self-healing.
-4. Discuss when GitOps with Argo CD is a good fit and where it falls short (secrets, emergency fixes, polling delay).
+1. Explain the main GitOps principles (declarative config, Git as the source of truth, pull-based deployment, continuous reconciliation).
+2. Deploy an application with an Argo CD `Application` resource and check its `Synced` and `Healthy` status, both in the terminal and in the web UI.
+3. Create configuration drift with `kubectl` and see how Argo CD detects it (`OutOfSync`) and repairs it with self-healing.
+4. Discuss in which cases GitOps with Argo CD is a good idea and where it has problems, for example secrets or emergency fixes.
 
 ## Architecture
 
 ![Architecture of the tutorial](./architecture.png)
 
-- **Git repository**: [s-riviere/kth-devops-tutorial](https://github.com/s-riviere/kth-devops-tutorial). The folder `gitops-argocd/gitops/app/` contains a `Deployment` (2 nginx Pods) and a `Service`. This is the desired state.
-- **Argo CD** runs in the `argocd` namespace. The *repo-server* fetches the manifests from Git, the *application-controller* compares them with the live objects and applies changes, and the *argocd-server* serves the web UI.
-- **The application** runs in the `default` namespace. This is the live state.
+There are three parts in the setup:
 
-Argo CD has two triggers. It polls Git (about every 3 minutes by default) to catch new commits, and it watches the cluster through the Kubernetes API, so a manual change is detected within seconds. When the two states differ and `selfHeal` is on, the controller applies the Git version again.
+- The Git repository [s-riviere/kth-devops-tutorial](https://github.com/s-riviere/kth-devops-tutorial). The folder `gitops-argocd/gitops/app/` has a `Deployment` with 2 nginx Pods and a `Service`. This is our desired state.
+- Argo CD, installed in the `argocd` namespace. It is made of several components. The repo-server fetches the manifests from Git, the application-controller compares them with what is in the cluster and applies changes, and argocd-server is the web UI.
+- The application itself, which runs in the `default` namespace. This is the live state.
+
+Argo CD reacts to two things. It polls Git for new commits (every 3 minutes by default), and it also watches the cluster through the Kubernetes API, which is why a manual change gets noticed in a few seconds. If the two states are different and `selfHeal` is enabled, the controller applies the version from Git again.
 
 ## Environment
 
-Everything runs in this browser tab: a single node Kubernetes cluster provided by Killercoda. No account or local installation is needed. A background script installs Argo CD (pinned to `v3.5.3`) and opens its web UI on port 8080. This takes up to two minutes; the first step waits for it.
+Everything runs in the browser on a single node Kubernetes cluster from Killercoda, so you don't need an account or to install anything. A background script installs Argo CD (version `v3.5.3`) and opens the web UI on port 8080, this takes up to two minutes and the first step waits for it to finish.
 
-The whole scenario takes about 15 to 20 minutes.
+The tutorial takes around 15-20 minutes.

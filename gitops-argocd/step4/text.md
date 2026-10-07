@@ -1,6 +1,6 @@
 # 4. Create drift and watch self-healing
 
-Now play the on-call engineer who changes production by hand. Each command below makes the live state differ from Git. Keep the Argo CD UI visible: Argo CD watches the cluster through the Kubernetes API, so it notices the change almost immediately and repairs it within about 5 seconds.
+Now you are the on-call engineer who changes production by hand. Both commands below make the cluster different from what is in Git. Keep the Argo CD UI open while you run them. Since Argo CD watches the cluster through the Kubernetes API it sees the change almost right away, and it should be fixed in about 5 seconds.
 
 ## Delete the Service
 
@@ -8,13 +8,13 @@ Now play the on-call engineer who changes production by hand. Each command below
 kubectl delete service my-app-service
 ```{{exec}}
 
-In the UI, the application turns `OutOfSync` and the Service briefly disappears from the tree. Then Argo CD recreates it. Check:
+In the UI the application goes `OutOfSync` and the Service disappears from the tree for a moment, then Argo CD creates it again. Check it:
 
 ```bash
 kubectl get service my-app-service
 ```{{exec}}
 
-The Service is back, with a new creation timestamp (`AGE`). Argo CD did not restore a backup; it applied the manifest from Git again.
+The Service is back. Look at the `AGE` column, it is a new object, Argo CD just applied the manifest from Git one more time.
 
 ## Scale the Deployment to zero
 
@@ -22,16 +22,16 @@ The Service is back, with a new creation timestamp (`AGE`). Argo CD did not rest
 kubectl scale deployment my-app --replicas=0
 ```{{exec}}
 
-Git says `replicas: 2`, so Argo CD sets it back. Watch it happen (press `Ctrl+C` to stop):
+In Git the Deployment has `replicas: 2`, so Argo CD changes it back. You can watch it (stop with `Ctrl+C`):
 
 ```bash
 watch -n 1 'kubectl get deployment my-app'
 ```{{exec}}
 
-You may see `0/2` or `1/2` for a moment while the Pods start again.
+For a short time you might see `0/2` or `1/2` while the Pods are starting again.
 
 ## What happened
 
-Both times, the same loop ran: observe the live state, compare it with Git, apply the difference. Your manual change was treated as an error, not as a new version of the application. To change the application for good, you have to change Git.
+In both cases the same loop did the work: Argo CD looked at the live state, compared it with Git and applied the difference. For Argo CD your manual change is just drift that has to be corrected. If you want to change the application permanently, the change has to go into Git.
 
-Click **CHECK** once the application is back to 2 replicas with its Service.
+Click **CHECK** when the application is back to 2 replicas and the Service exists.

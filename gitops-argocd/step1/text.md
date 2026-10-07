@@ -1,16 +1,16 @@
 # 1. Wait for the environment
 
-A background script is preparing the cluster. It:
+While you read this, a background script is setting up the cluster. It waits for the Kubernetes node to be ready and then installs Argo CD `v3.5.3` in the `argocd` namespace. We pinned the version so the tutorial works the same way every time it is run.
 
-- waits for the Kubernetes node to be ready;
-- installs Argo CD `v3.5.3` in the `argocd` namespace (pinned so the tutorial behaves the same on every run);
-- enables plain HTTP on the Argo CD server, since Killercoda already terminates HTTPS in front of it;
-- shortens the self-heal backoff to 5 seconds so you can watch healing happen live;
-- downloads the `Application` manifest you will use in step 3;
-- exposes the Argo CD web UI on port 8080.
+It also changes a few settings:
 
-The terminal shows the progress. It usually takes less than two minutes.
+- the Argo CD server runs on plain HTTP, because Killercoda already puts HTTPS in front of it
+- the self-heal backoff is reduced to 5 seconds, otherwise you would have to wait a while to see the healing
+- the `Application` manifest for step 3 is downloaded
+- the web UI is exposed on port 8080
 
-Installing Argo CD is not the interesting part of this tutorial, which is why it is automated. The Argo CD *application* is deliberately **not** deployed yet: you will do that yourself.
+You can follow the progress in the terminal. Usually it is done in less than two minutes.
 
-Click **CHECK** when `Argo CD is ready` appears in the terminal.
+We automated the installation because it is not really what this tutorial is about. The application however is not deployed yet, you will do that yourself in step 3.
+
+Click **CHECK** once you see `Argo CD is ready` in the terminal.

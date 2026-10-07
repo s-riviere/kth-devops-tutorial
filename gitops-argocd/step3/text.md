@@ -1,16 +1,16 @@
 # 3. Deploy the application the GitOps way
 
-In a push-based workflow you would run `kubectl apply -f deployment.yaml`. Here you never apply the app manifests yourself. Instead, you tell Argo CD *where* the desired state lives and let it do the deployment.
+Normally you would deploy the app with something like `kubectl apply -f deployment.yaml`. In this step you don't apply the app manifests at all. You only tell Argo CD where the desired state is stored, and Argo CD does the deployment.
 
-That is the job of an `Application` resource. Look at it:
+This is done with an `Application` resource. Let's look at it:
 
 ```bash
 cat /tmp/my-app-application.yaml
 ```{{exec}}
 
-- `source` points to the Git repository, the branch (`HEAD`) and the folder `gitops-argocd/gitops/app`.
-- `destination` is the cluster Argo CD runs in (`https://kubernetes.default.svc`) and the `default` namespace.
-- `syncPolicy.automated` makes Argo CD sync without anyone clicking a button. `prune: true` deletes objects that are removed from Git. `selfHeal: true` reverts manual changes to the cluster, which is what you will test in step 4.
+The `source` part points to our Git repository, the branch (`HEAD`) and the folder `gitops-argocd/gitops/app`. The `destination` is the same cluster Argo CD runs in (`https://kubernetes.default.svc`), in the `default` namespace.
+
+The `syncPolicy.automated` part means Argo CD syncs on its own without someone clicking a button. `prune: true` deletes objects that get removed from Git, and `selfHeal: true` reverts manual changes made in the cluster. We will test the last one in step 4.
 
 Apply it:
 
@@ -18,18 +18,17 @@ Apply it:
 kubectl apply -f /tmp/my-app-application.yaml
 ```{{exec}}
 
-Argo CD now clones the repository, compares the manifests with the cluster (where nothing exists yet), sees that everything is missing, and creates it. In the UI, the `my-app` tile appears and turns `Synced` and `Healthy` after a few seconds. Click on it to see the tree: Deployment, ReplicaSet, Pods and Service.
+Argo CD now clones the repo and compares the manifests with the cluster. Since nothing exists yet, everything is missing, so it creates all of it. In the UI you should see a `my-app` tile that becomes `Synced` and `Healthy` after some seconds. If you click on it you get the tree with the Deployment, ReplicaSet, Pods and Service.
 
-From the CLI:
+You can check the same thing from the terminal:
 
 ```bash
 kubectl get application my-app -n argocd
 ```{{exec}}
 
-- **Sync status** answers "does the cluster match Git?" (`Synced` / `OutOfSync`).
-- **Health status** answers "is the application working?" (`Healthy`, `Progressing`, `Degraded`...).
+There are two different statuses here. The sync status tells you if the cluster matches Git (`Synced` or `OutOfSync`). The health status tells you if the application is actually working (`Healthy`, `Progressing`, `Degraded`, ...).
 
-Check the resources Argo CD created:
+Now check the resources that Argo CD created:
 
 ```bash
 kubectl get deployment my-app
@@ -37,10 +36,6 @@ kubectl get service my-app-service
 kubectl get pods -l app=my-app
 ```{{exec}}
 
-You should have:
-
-- the `my-app` Deployment with 2 replicas;
-- the `my-app-service` Service;
-- 2 running Pods.
+You should see the `my-app` Deployment with 2 replicas, the `my-app-service` Service and 2 running Pods.
 
 Click **CHECK** when the application is `Synced` and `Healthy`.
