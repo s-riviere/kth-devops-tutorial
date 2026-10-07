@@ -53,9 +53,8 @@ kubectl patch configmap argocd-cmd-params-cm \
   -p '{
     "data": {
       "server.insecure": "true",
-      "controller.self.heal.backoff.timeout.seconds": "20",
-      "controller.self.heal.backoff.factor": "2",
-      "controller.self.heal.backoff.cap.seconds": "30"
+      "timeout.reconciliation.jitter":"0",
+      "controller.self.heal.backoff.cap.seconds": "5"
     }
   }'
 

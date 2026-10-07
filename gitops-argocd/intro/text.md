@@ -1,3 +1,3 @@
-# GitOps and Continuous Reconciliation with Argo CD
+# Introduction
 
-Let's start by checking the Kubernetes cluster.
+Intro

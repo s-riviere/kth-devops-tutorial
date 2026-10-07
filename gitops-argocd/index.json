@@ -4,27 +4,23 @@
   "details": {
     "intro": {
       "text": "intro/text.md",
-      "background": "background.sh",
-      "foreground": "foreground.sh"
+      "background": "background.sh"
     },
     "steps": [
       {
-        "title": "1. Check the Kubernetes cluster",
         "text": "step1/text.md",
-        "verify": "step1/verify.sh"
+        "verify": "step1/verify.sh",
+        "foreground": "foreground.sh"
       },
       {
-        "title": "2. Open Argo CD",
         "text": "step2/text.md",
         "verify": "step2/verify.sh"
       },
       {
-        "title": "3. Deploy the GitOps application",
         "text": "step3/text.md",
         "verify": "step3/verify.sh"
       },
       {
-        "title": "4. Create drift and watch self-healing",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
       }

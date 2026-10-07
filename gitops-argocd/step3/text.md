@@ -1,16 +1,14 @@
 # 3. Deploy the GitOps application
 
-The Argo CD Application manifest has been prepared for you.
-
-Apply it:
+Apply the Argo CD Application manifest which tells Argo CD what to do:
 
 ```bash
 kubectl apply -f /tmp/my-app-application.yaml
 ```
 
-Argo CD will now use the Git repository as the source of truth for the application.
+Argo CD has `selfHeal: true` enabled. It should detect the difference between Git and the live cluster and restore the desired state.
 
-Check the Argo CD Application:
+Check the Argo CD Application on the web interface or with the following command:
 
 ```bash
 kubectl get application my-app -n argocd
@@ -31,13 +29,5 @@ You should have:
 - `my-app` with 2 replicas;
 - `my-app-service`;
 - 2 running Pods.
-
-Open the Argo CD UI again:
-
-[Open Argo CD]({{TRAFFIC_HOST1_8080}})
-
-You should see `my-app` as:
-
-**Synced / Healthy**
 
 Click **CHECK** when the application is ready.

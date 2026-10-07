@@ -1,8 +1,12 @@
-# 2. Open Argo CD
+# 2. Kubernetes and ArgoCD setup
 
-Argo CD has already been installed and configured for this lab.
+First, make sure the Kubernetes cluster is ready.
 
-Open the Argo CD web interface:
+```bash
+kubectl get nodes
+```
+
+Open the Argo CD web interface and put it side to side with the Killercoda window:
 
 [Open Argo CD]({{TRAFFIC_HOST1_8080}})
 

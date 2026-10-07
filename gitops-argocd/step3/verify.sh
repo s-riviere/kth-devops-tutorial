@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+# Verify that the Argo CD application "my-app" exists and is synced and healthy
 kubectl get application my-app -n argocd >/dev/null
 
 kubectl wait \
@@ -15,6 +16,7 @@ kubectl wait \
   -n argocd \
   --timeout=30s >/dev/null
 
+# Verify that the deployment and service for "my-app" exist and have the expected number of replicas
 kubectl get deployment my-app >/dev/null
 kubectl get service my-app-service >/dev/null
 

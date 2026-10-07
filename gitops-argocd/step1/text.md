@@ -1,19 +1,5 @@
-# 1. Check the Kubernetes cluster
-
-First, make sure the Kubernetes cluster is ready.
-
-Run:
-
-```bash
-kubectl get nodes
-```
-
-The node should have the status:
-
-```text
-Ready
-```
+# 1. Background setup and configuration of the environment
 
 ArgoCD is being installed and configured in the background, the check button will let you pass after everything is ready (<2mn).
 
-Click **CHECK** when the Kubernetes cluster is ready.
+Click **CHECK** when `Argo CD is ready` appears in the terminal.
