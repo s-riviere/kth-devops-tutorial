@@ -26,6 +26,6 @@ Git says 2 replicas, so Argo CD scales it back up. Watch it (`Ctrl+C` to stop):
 watch -n 1 kubectl get deployment my-app
 ```{{exec}}
 
-In both cases Argo CD compared the live state with Git and applied the difference. So the only way to really change the app is to change Git.
+In both cases Argo CD compared the live state with Git and applied the difference. So the only way to really change the app is to change Git, which is what we do next.
 
 Click **CHECK** when the app is back to 2 replicas and the Service exists.

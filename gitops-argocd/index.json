@@ -1,6 +1,6 @@
 {
   "title": "GitOps and Continuous Reconciliation with Argo CD",
-  "description": "A minimal hands-on demonstration of configuration drift and Argo CD self-healing.",
+  "description": "A minimal hands-on demonstration of configuration drift, Argo CD self-healing and deploying through Git.",
   "details": {
     "intro": {
       "text": "intro/text.md",
@@ -23,6 +23,10 @@
       {
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
+      },
+      {
+        "text": "step5/text.md",
+        "verify": "step5/verify.sh"
       }
     ],
     "finish": {
