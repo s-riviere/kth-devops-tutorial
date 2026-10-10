@@ -3,7 +3,7 @@
 Apply the Argo CD Application manifest which tells Argo CD what to do:
 
 ```bash
-kubectl apply -f /tmp/my-app-application.yaml
+kubectl apply -f ~/my-app-git/application.yaml
 ```
 
 Argo CD has `selfHeal: true` enabled. It should detect the difference between Git and the live cluster and restore the desired state.
