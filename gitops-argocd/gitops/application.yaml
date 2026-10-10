@@ -6,12 +6,10 @@ metadata:
 spec:
   project: default
 
-  # --- Default values ---
   source:
     repoURL: https://github.com/s-riviere/kth-devops-tutorial.git
     targetRevision: HEAD
     path: gitops-argocd/gitops/app
-  # --- Default values ---
 
   destination:
     server: https://kubernetes.default.svc

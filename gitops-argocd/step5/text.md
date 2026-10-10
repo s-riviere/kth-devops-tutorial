@@ -1,6 +1,6 @@
 # Step 5: Change the app through Git
 
-Now we do it the right way. The repo Argo CD reads from is in `~/my-app-git`, let's change the number of replicas from 2 to 3:
+Now we do it the right way. The single source of truth of Argo CD is the content of the repo `~/my-app-git`, let's change the number of replicas from 2 to 3:
 
 ```bash
 cd ~/my-app-git
